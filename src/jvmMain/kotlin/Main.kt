@@ -6,7 +6,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
@@ -24,7 +23,7 @@ fun App() {
         titulo = "Batman: O Cavaleiro das Trevas",
         nota = 9.0,
         ano = 2008,
-        imagem = "https://br.web.img3.acsta.net/c_310_420/medias/nmedia/18/86/98/32/19870786.jpg"
+        imagemUrl = "https://br.web.img3.acsta.net/c_310_420/medias/nmedia/18/86/98/32/19870786.jpg"
     )
 
     with(batmanMovie) {
@@ -32,9 +31,9 @@ fun App() {
             Column {
                 Text(titulo, fontStyle = FontStyle.Italic, fontWeight = FontWeight.Bold, fontSize = 24.sp)
                 Image(
-//                    painter = painterResource(imagem),
-                    bitmap = imagem.loadImageBitmap(),
-                    contentDescription = "capa $imagem"
+//                    painter = painterResource(imagemUrl),
+                    bitmap = imagemUrl.loadImageBitmap(),
+                    contentDescription = "capa $imagemUrl"
                 )
                 Text("Nota: $nota - Ano: $ano")
             }
@@ -53,7 +52,7 @@ data class Movie(
     val titulo: String = "",
     val nota: Double = 0.0,
     val ano: Int = 0,
-    val imagem: String = ""
+    val imagemUrl: String = ""
 )
 
 fun main() = application {
