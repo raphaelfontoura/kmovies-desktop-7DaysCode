@@ -3,16 +3,15 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.darkColors
 import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import org.jetbrains.skia.Image as ImageSkia
-import java.net.URL
+import extensions.loadImageBitmapV2
+import model.Movie
 
 
 @Composable
@@ -27,12 +26,12 @@ fun App() {
     )
 
     with(batmanMovie) {
-        MaterialTheme {
+        MaterialTheme(colors = darkColors()) {
             Column {
                 Text(titulo, fontStyle = FontStyle.Italic, fontWeight = FontWeight.Bold, fontSize = 24.sp)
                 Image(
 //                    painter = painterResource(imagemUrl),
-                    bitmap = imagemUrl.loadImageBitmap(),
+                    bitmap = imagemUrl.loadImageBitmapV2(),
                     contentDescription = "capa $imagemUrl"
                 )
                 Text("Nota: $nota - Ano: $ano")
@@ -40,20 +39,6 @@ fun App() {
         }
     }
 }
-
-fun String.loadImageBitmap(): ImageBitmap {
-    val url = URL(this)
-    val openStream = url.openStream()
-    val bytes = openStream.readAllBytes()
-    return ImageSkia.makeFromEncoded(bytes).toComposeImageBitmap()
-}
-
-data class Movie(
-    val titulo: String = "",
-    val nota: Double = 0.0,
-    val ano: Int = 0,
-    val imagemUrl: String = ""
-)
 
 fun main() = application {
     Window(onCloseRequest = ::exitApplication) {
