@@ -30,7 +30,6 @@ fun App() {
             Column {
                 Text(titulo, fontStyle = FontStyle.Italic, fontWeight = FontWeight.Bold, fontSize = 24.sp)
                 Image(
-//                    painter = painterResource(imagemUrl),
                     bitmap = imagemUrl.loadImageBitmapV2(),
                     contentDescription = "capa $imagemUrl"
                 )
