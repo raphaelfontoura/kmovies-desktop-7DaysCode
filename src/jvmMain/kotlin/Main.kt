@@ -41,25 +41,37 @@ fun App() {
         imagemUrl = "https://www.themoviedb.org/t/p/original/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg"
     )
 
-    with(batmanMovie) {
-        MaterialTheme(
-            colors = darkColors()
-        ) {
-            Surface {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    val movies = listOf(
-                        batmanMovie, shawshank
+    MaterialTheme(
+        colors = darkColors()
+    ) {
+        Surface {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                val movies = listOf(
+                    batmanMovie,
+                    shawshank,
+                    Movie(
+                        titulo = "The Lord of the Rings: The Return of the King",
+                        nota = 9.0,
+                        ano = 2003,
+                        imagemUrl = "https://www.themoviedb.org/t/p/w300_and_h450_bestv2/dqd7JdEMX0JgXw3Hw0sBM9iRrJz.jpg"
+                    ),
+                    Movie(
+                        titulo = "Forrest Gump",
+                        nota = 8.8,
+                        ano = 1994,
+                        imagemUrl = "https://www.themoviedb.org/t/p/w300_and_h450_bestv2/d74WpIsH8379TIL4wUxDneRCYv2.jpg"
                     )
-                    LazyColumn {
-                        items(movies) { movie ->
-                            MovieItem(movie)
-                        }
+                )
+                LazyColumn {
+                    items(movies) { movie ->
+                        MovieItem(movie)
                     }
                 }
             }
-
         }
+
     }
+
 }
 
 fun main() = application {
