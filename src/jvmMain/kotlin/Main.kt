@@ -1,24 +1,24 @@
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import extensions.loadImageBitmapV2
 import model.Movie
-import java.net.CookieHandler
 
 
 @Composable
@@ -33,56 +33,58 @@ fun App() {
     )
 
     with(batmanMovie) {
-        MaterialTheme(colors = darkColors()) {
-            Surface(
-                modifier = Modifier.widthIn(min = 260.dp, max = 360.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .padding(20.dp)
-                        .fillMaxWidth()
-                ) {
+        MaterialTheme(
+            colors = darkColors()
+        ) {
+            Surface {
+                Box(modifier = Modifier.fillMaxWidth()) {
                     Column(
-                        modifier = Modifier.padding(10.dp),
+                        modifier = Modifier.padding(16.dp).width(320.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
                         Image(
                             bitmap = imagemUrl.loadImageBitmapV2(),
-                            contentDescription = "capa $imagemUrl"
+                            contentDescription = "capa $imagemUrl",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(4.dp))
                         )
                         Row(
                             modifier = Modifier
-                                .fillMaxWidth(),
+                                .fillMaxWidth()
+                                .padding(
+                                    top = 8.dp,
+                                    start = 8.dp,
+                                    end = 8.dp
+                                ),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Column {
-                                Row {
-                                    Icon(
-                                        Icons.Rounded.Star,
-                                        contentDescription = "star icon",
-                                        tint = Color.Yellow
-                                    )
-                                    Text("$nota")
-                                }
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    Icons.Default.Star,
+                                    contentDescription = "star icon",
+                                    tint = Color.Yellow,
+                                    modifier = Modifier.height(16.dp)
+                                )
+                                Text(
+                                    "$nota",
+                                    modifier = Modifier.padding(start = 2.dp),
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
-                            Column {
-                                Text("$ano")
-                            }
+                            Text("$ano", fontSize = 14.sp)
                         }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(fraction = 0.8f),
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                titulo,
-                                fontStyle = FontStyle.Italic,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp,
-                                textAlign = TextAlign.Center
-                            )
-                        }
+                        Text(
+                            titulo,
+                            fontStyle = FontStyle.Italic,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            textAlign = TextAlign.Center
+                        )
+
                     }
                 }
             }
