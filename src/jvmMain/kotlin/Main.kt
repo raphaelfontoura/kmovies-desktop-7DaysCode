@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import client.MovieWebClient
 import extensions.loadImageBitmapV2
 import model.Movie
 
@@ -27,44 +29,17 @@ import model.Movie
 @Preview
 fun App() {
 
-    val batmanMovie = Movie(
-        titulo = "Batman: O Cavaleiro das Trevas",
-        nota = 9.0,
-        ano = 2008,
-        imagemUrl = "https://br.web.img3.acsta.net/c_310_420/medias/nmedia/18/86/98/32/19870786.jpg"
-    )
-
-    val shawshank = Movie(
-        titulo = "The Shawshank Redemption",
-        nota = 9.3,
-        ano = 1994,
-        imagemUrl = "https://www.themoviedb.org/t/p/original/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg"
-    )
+    val movieWeb = MovieWebClient()
+    val top250Movies = movieWeb.movies
 
     MaterialTheme(
         colors = darkColors()
     ) {
         Surface {
             Box(modifier = Modifier.fillMaxWidth()) {
-                val movies = listOf(
-                    batmanMovie,
-                    shawshank,
-                    Movie(
-                        titulo = "The Lord of the Rings: The Return of the King",
-                        nota = 9.0,
-                        ano = 2003,
-                        imagemUrl = "https://www.themoviedb.org/t/p/w300_and_h450_bestv2/dqd7JdEMX0JgXw3Hw0sBM9iRrJz.jpg"
-                    ),
-                    Movie(
-                        titulo = "Forrest Gump",
-                        nota = 8.8,
-                        ano = 1994,
-                        imagemUrl = "https://www.themoviedb.org/t/p/w300_and_h450_bestv2/d74WpIsH8379TIL4wUxDneRCYv2.jpg"
-                    )
-                )
                 LazyColumn {
-                    items(movies) { movie ->
-                        MovieItem(movie)
+                    items(top250Movies) { movie ->
+                        movieItem(movie)
                     }
                 }
             }
@@ -81,7 +56,7 @@ fun main() = application {
 }
 
 @Composable
-fun MovieItem(movie: Movie) = run {
+fun movieItem(movie: Movie) = run {
     with(movie) {
         Column(
             modifier = Modifier.padding(16.dp).width(320.dp),
@@ -91,7 +66,9 @@ fun MovieItem(movie: Movie) = run {
             Image(
                 bitmap = imagemUrl.loadImageBitmapV2(),
                 contentDescription = "capa $imagemUrl",
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
+                    .width(280.dp)
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(4.dp))
             )
