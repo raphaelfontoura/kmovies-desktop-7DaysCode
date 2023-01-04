@@ -1,7 +1,9 @@
 package client
 
+import androidx.compose.runtime.remember
 import client.config.RetrofitInit
 import client.response.ImdbResponse
+import client.response.toMovie
 import model.Movie
 import retrofit2.Call
 import retrofit2.Callback
@@ -13,33 +15,27 @@ class MovieWebClient {
 
     val movies = mutableListOf<Movie>()
 
-    init {
-        findTop250Movies()
-    }
-
     fun findTop250Movies() {
         service.listTopMovies().enqueue(object : Callback<ImdbResponse> {
             override fun onResponse(
                 call: Call<ImdbResponse>,
                 response: Response<ImdbResponse>
             ) {
+                println(response)
+                println(response.body()?.toString())
                 response.body().also {
                     it?.items?.forEach { movie ->
-                        movies.add(Movie(
-                            titulo = movie.title,
-                            nota = movie.imDbRating.toDouble(),
-                            ano = movie.year.toInt(),
-                            imagemUrl = movie.image
-                        ))
-
+                        movies.add(movie.toMovie())
                     }
+                }.also { it ->
+                    it?.items?.forEach { println(it) }
                 }
             }
             override fun onFailure(
                 call: Call<ImdbResponse>,
                 t: Throwable
             ) {
-
+                println(t)
             }
         })
     }
