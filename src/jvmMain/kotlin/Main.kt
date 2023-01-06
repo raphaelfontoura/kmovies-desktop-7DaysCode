@@ -1,44 +1,29 @@
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import client.MovieWebClient
-import extensions.loadImageBitmapV2
-import model.Movie
+import client.Status
+import ui.CenteredMessage
+import ui.MoviesListScreen
 
 
 @Composable
 @Preview
-fun App(movies: MutableState<MutableList<Movie>>) {
+fun App(content: @Composable () -> Unit) {
 
     MaterialTheme(
         colors = darkColors()
     ) {
         Surface {
             Box(modifier = Modifier.fillMaxWidth()) {
-                LazyColumn {
-                    items(movies.component1()) { movie ->
-                        movieItem(movie)
-                    }
-                }
+                content()
             }
         }
 
@@ -48,68 +33,57 @@ fun App(movies: MutableState<MutableList<Movie>>) {
 
 fun main() = application {
     val client = MovieWebClient()
-    client.findTop250Movies()
 
-    var movies = remember { mutableStateOf(client.movies) }
+    val loadingMovieStatus = client
+        .findTop250Movies()
+        .collectAsState(Status.Loading)
+        .value
 
-    Window(onCloseRequest = ::exitApplication) {
-        App(movies)
-    }
-}
-
-@Composable
-fun movieItem(movie: Movie) = run {
-    with(movie) {
-        Column(
-            modifier = Modifier.padding(16.dp).width(320.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            Image(
-                bitmap = imagemUrl.loadImageBitmapV2(),
-                contentDescription = "capa $imagemUrl",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .width(320.dp)
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(4.dp))
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        top = 8.dp,
-                        start = 8.dp,
-                        end = 8.dp
-                    ),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        Icons.Default.Star,
-                        contentDescription = "star icon",
-                        tint = Color.Yellow,
-                        modifier = Modifier.height(16.dp)
-                    )
-                    Text(
-                        "$nota",
-                        modifier = Modifier.padding(start = 2.dp),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+    Window(
+        onCloseRequest = ::exitApplication,
+        title = "KMovies-IMDB"
+    ) {
+        App {
+            when (loadingMovieStatus) {
+                is Status.Success -> {
+                    val movies = loadingMovieStatus.data
+                    if (movies.isNotEmpty()) {
+                        MoviesListScreen(movies)
+                    } else {
+                        CenteredMessage("Sem filmes")
+                    }
                 }
-                Text("$ano", fontSize = 14.sp)
-            }
-            Text(
-                titulo,
-                fontStyle = FontStyle.Italic,
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 14.dp)
-            )
 
+                is Status.Error -> {
+                    val error = loadingMovieStatus.exception
+                    var showSnackBar by remember {
+                        mutableStateOf(true)
+                    }
+                    if (showSnackBar) {
+                        Snackbar(
+                            modifier = Modifier
+                                .padding(8.dp),
+                            action = {
+                                Button(onClick = {
+                                    showSnackBar = false
+                                }) {
+                                    Text("Close")
+                                }
+                            },
+                        ) {
+                            Text("Falha ao buscar filmes")
+                            error.printStackTrace()
+                        }
+                    }
+                }
+
+                Status.Loading -> {
+                    CenteredMessage("Carregando filmes...")
+                }
+            }
         }
     }
 }
+
+
+

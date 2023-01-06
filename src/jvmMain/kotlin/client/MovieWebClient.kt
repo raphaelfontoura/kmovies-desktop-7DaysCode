@@ -4,6 +4,7 @@ import androidx.compose.runtime.remember
 import client.config.RetrofitInit
 import client.response.ImdbResponse
 import client.response.toMovie
+import kotlinx.coroutines.flow.flow
 import model.Movie
 import retrofit2.Call
 import retrofit2.Callback
@@ -13,31 +14,22 @@ class MovieWebClient {
 
     private val service = RetrofitInit().movieService
 
-    val movies = mutableListOf<Movie>()
-
-    fun findTop250Movies() {
-        service.listTopMovies().enqueue(object : Callback<ImdbResponse> {
-            override fun onResponse(
-                call: Call<ImdbResponse>,
-                response: Response<ImdbResponse>
-            ) {
-                println(response)
-                println(response.body()?.toString())
-                response.body().also {
-                    it?.items?.forEach { movie ->
-                        movies.add(movie.toMovie())
-                    }
-                }.also { it ->
-                    it?.items?.forEach { println(it) }
-                }
-            }
-            override fun onFailure(
-                call: Call<ImdbResponse>,
-                t: Throwable
-            ) {
-                println(t)
-            }
-        })
+    fun findTop250Movies() = flow {
+        val result = try {
+            val movies = service.listTopMovies()
+                .items.map { it.toMovie() }
+            println("movies loaded $movies")
+            Status.Success(movies)
+        } catch (e: Exception) {
+            println("exception loaded")
+            Status.Error(e)
+        }
+        emit(result)
     }
+}
 
+sealed class Status<out R> {
+    data class Success<out T>(val data: T) : Status<T>()
+    data class Error(val exception: Exception) : Status<Nothing>()
+    object Loading : Status<Nothing>()
 }
